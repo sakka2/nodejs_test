@@ -1,0 +1,39 @@
+shared:
+  image: node:6
+  secrets:
+    - SOURCE_CLEAR_TOKEN
+jobs:
+  test-case1:
+    requires: [ ~pr, ~commit ]
+    annotations:
+      beta.screwdriver.cd/timeout: 126
+    steps:
+      - test: |
+          echo "this is annotation test."
+          echo "nToken: ";
+          echo "SD_TOKEN: $SD_TOKEN";
+  test-case2:
+    requires: [ test-case1 ]
+    annotations:
+      beta.screwdriver.cd/timeout: 121
+    steps:
+      - test: |
+          echo "this is annotation test. over MAX_BUILD_TIMEOUT"
+          echo "nToken: ";
+          echo "SD_TOKEN: $SD_TOKEN";
+  test-case3:
+    requires: [ test-case2 ]
+    steps:
+      - test: |
+          echo "this is no annotation. It should be default build timeout value (90min.)"
+          echo "nToken: ";
+          echo "SD_TOKEN: $SD_TOKEN";
+  test-case4:
+    requires: [ test-case3 ]
+    annotations:
+      beta.screwdriver.cd/timeout: 'aaa'
+    steps:
+      - test: |
+          echo "this is invalid annotation."
+          echo "nToken: ";
+          echo "SD_TOKEN: $SD_TOKEN";
